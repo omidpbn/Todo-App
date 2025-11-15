@@ -1,5 +1,6 @@
-import Header from "../shared/components/organisms/header";
 import type { Metadata } from "next";
+import ToastProvider from "../shared/components/atoms/toastProvider";
+import Header from "../shared/components/organisms/header";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           {children}
         </main>
+        <ToastProvider/>
       </body>
     </html>
   );

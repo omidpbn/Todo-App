@@ -1,14 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { useEffect } from "react";
 import Button from "../button";
+import { FaSun, FaMoon } from "react-icons/fa";
+import { useThemeStore } from "@/src/shared/store/useThemeStore";
 
 const ThemeSwitcher = () => {
-  const [dark, setDark] = useState(false);
+  const { dark, setDark, toggle } = useThemeStore();
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    
+    if (savedTheme === "dark") {
+      setDark(true);
+    } else if (savedTheme === "light") {
+      setDark(false);
+    } else {
+      setDark(true);
+    }
+  }, []);
 
   useEffect(() => {
     const html = document.documentElement;
+
     if (dark) {
       html.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -18,23 +32,9 @@ const ThemeSwitcher = () => {
     }
   }, [dark]);
 
-  useEffect(() => {
-    if (localStorage.getItem("theme") === "dark") {
-      setDark(true);
-    }
-  }, []);
-
   return (
-    <Button color="" outline className="!p-0" onClick={() => setDark(!dark)}>
-      {dark ? (
-        <>
-          <FaSun className="w-5 h-5" />
-        </>
-      ) : (
-        <>
-          <FaMoon className="w-5 h-5" />
-        </>
-      )}
+    <Button color="" outline className="!p-0" onClick={() => toggle()}>
+      {dark ? <FaSun className="w-5 h-5" /> : <FaMoon className="w-5 h-5" />}
     </Button>
   );
 };
