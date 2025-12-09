@@ -1,4 +1,4 @@
-import { TaskBoard } from "@/src/modules/task/components/organisms/TaskBoard";
+import TaskBoard from "@/src/modules/task/components/organisms/TaskBoard";
 
 const Page = () => {
   return (

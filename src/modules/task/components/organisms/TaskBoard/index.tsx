@@ -1,13 +1,15 @@
 "use client";
 
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided, DroppableProvided } from "@hello-pangea/dnd";
 import { useTaskStore } from "../../../store/useTaskStore";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import TaskModal from "../../molecules/TaskModal";
 import Button from "@/src/shared/components/atoms/button";
 
-export const TaskBoard = () => {
+type Column = "backlog" | "todo" | "inprogress" | "done";
+
+const TaskBoard = () => {
   const tasks = useTaskStore((s) => s.tasks);
   const moveTask = useTaskStore((s) => s.moveTask);
   const deleteTask = useTaskStore((s) => s.deleteTask);
@@ -15,18 +17,16 @@ export const TaskBoard = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectTask, setSelectTask] = useState<Task | null>(null);
 
-  // State for mobile collapsed columns
-  const [activeColumn, setActiveColumn] = useState<null | string>(null);
+  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  const columns = ["backlog", "todo", "inprogress", "done"] as const;
+  const columns: Column[] = ["backlog", "todo", "inprogress", "done"];
 
-  // Detect screen size and adjust mobile collapse
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setIsMobile(true);
-        setActiveColumn(""); // default collapsed on mobile
+        setActiveColumn("backlog"); // default collapsed on mobile
       } else {
         setIsMobile(false);
         setActiveColumn(null); // all columns open on desktop
@@ -38,12 +38,12 @@ export const TaskBoard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle drag and drop
   const onDragEnd = (result: DropResult) => {
     const { destination, draggableId } = result;
     if (!destination) return;
 
-    moveTask(draggableId, destination.droppableId as any);
+    const destColumn = destination.droppableId as Column;
+    moveTask(draggableId, destColumn);
   };
 
   return (
@@ -59,14 +59,12 @@ export const TaskBoard = () => {
 
             return (
               <Droppable droppableId={col} key={col}>
-                {(provided) => (
-                  // Column container: flex-col, height auto
+                {(provided: DroppableProvided) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`bg-gray-100 dark:bg-gray-800 p-3 rounded flex flex-col ${isCollapsed ? "h-12 cursor-pointer" : ""}`}
                   >
-                    {/* Column header */}
                     <h3
                       className="font-bold mb-2 dark:text-gray-200 flex justify-between items-center flex-shrink-0"
                       onClick={() => isMobile && setActiveColumn(col)}
@@ -74,13 +72,12 @@ export const TaskBoard = () => {
                       {col.toUpperCase()}
                     </h3>
 
-                    {/* Only render tasks when column is expanded */}
                     {!isCollapsed && (
                       <div className="flex-1 overflow-y-auto flex flex-col gap-3" style={{ maxHeight: "calc(100vh - 6rem)" }}>
                         {colTasks.length > 0 ? (
                           colTasks.map((task, index) => (
                             <Draggable key={task.id} draggableId={task.id} index={index}>
-                              {(provided) => (
+                              {(provided: DraggableProvided) => (
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
@@ -114,11 +111,13 @@ export const TaskBoard = () => {
                                       onClick={() => {
                                         try {
                                           deleteTask(task.id);
-                                        } catch (err: any) {
-                                          toast.error(err.message, {
-                                            position: "top-center",
-                                            toastId: "delete-task-error",
-                                          });
+                                        } catch (err: unknown) {
+                                          if (err instanceof Error) {
+                                            toast.error(err.message, {
+                                              position: "top-center",
+                                              toastId: "delete-task-error",
+                                            });
+                                          }
                                         }
                                       }}
                                     >
@@ -130,7 +129,6 @@ export const TaskBoard = () => {
                             </Draggable>
                           ))
                         ) : (
-                          // Placeholder for empty column
                           <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 italic">No tasks yet</div>
                         )}
                         {provided.placeholder}
@@ -144,8 +142,9 @@ export const TaskBoard = () => {
         </div>
       </DragDropContext>
 
-      {/* Task modal for create/edit */}
       {isOpen && <TaskModal isOpen={isOpen} onClose={() => setIsOpen(false)} titleModal="Edit Task" taskToEdit={selectTask} />}
     </>
   );
 };
+
+export default TaskBoard;
