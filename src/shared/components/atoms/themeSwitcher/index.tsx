@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import Button from "../button";
-import { FaSun, FaMoon } from "react-icons/fa";
 import { useThemeStore } from "@/src/shared/store/useThemeStore";
+import { HiOutlineMoon } from "react-icons/hi";
+import { MdOutlineWbSunny } from "react-icons/md";
 
 const ThemeSwitcher = () => {
   const { dark, setDark, toggle } = useThemeStore();
@@ -34,7 +35,7 @@ const ThemeSwitcher = () => {
 
   return (
     <Button color="" outline className="!p-0" onClick={() => toggle()}>
-      {dark ? <FaSun className="w-5 h-5" /> : <FaMoon className="w-5 h-5" />}
+     {dark ? <HiOutlineMoon className="w-5 h-5" /> : <MdOutlineWbSunny className="w-5 h-5" />}
     </Button>
   );
 };

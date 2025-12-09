@@ -11,11 +11,11 @@ interface IModal {
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
     show: {
-      on: "flex bg-gray-900/50 dark:bg-slate-900/60",
+      on: "flex bg-gray-100/50 dark:bg-gray-900/60",
     },
   },
   content: {
-    inner: "relative rounded-2xl bg-white shadow-dark-sm dark:bg-transparent rounded-2xl p-6 flex flex-col ",
+    inner: "relative rounded-2xl bg-white dark:bg-gray-900 shadow-dark-sm  rounded-2xl p-6 flex flex-col ",
   },
   header: {
     base: "hidden",
