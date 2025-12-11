@@ -119,11 +119,11 @@ const TaskModal = ({ isOpen, onClose, titleModal, taskToEdit }: TaskModalProps) 
           )}
         </div>
 
-        <div className="flex flex-row items-center gap-2">
-          <Button type="submit" color="green" className="dark:bg-green-600 dark:text-white dark:hover:bg-green-500">
+        <div className="w-full flex flex-row items-center gap-2">
+          <Button type="submit" color="green" className="w-full dark:bg-green-600 dark:text-white dark:hover:bg-green-500">
             {taskToEdit ? "Update" : "Create"}
           </Button>
-          <Button color="red" outline onClick={onClose} className="dark:text-red-400 dark:border-red-400">
+          <Button color="red" outline onClick={onClose} className="w-full dark:text-red-400 dark:border-red-400">
             Cancel
           </Button>
         </div>
